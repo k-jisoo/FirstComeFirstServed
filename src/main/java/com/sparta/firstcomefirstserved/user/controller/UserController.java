@@ -18,12 +18,12 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto) {
+    public ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto) throws Exception{
         return userService.login(loginRequestDto);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody SignupRequestDto signupRequestDto) {
+    public ResponseEntity<String> register(@RequestBody SignupRequestDto signupRequestDto) throws Exception {
         userService.registerUser(signupRequestDto);
         return ResponseEntity.ok("User registered successfully");
     }

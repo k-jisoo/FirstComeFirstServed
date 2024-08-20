@@ -57,6 +57,15 @@ public class User {
         this.verificationToken = generateRandomString(20);
     }
 
+    public User(String username, String password, String email, String address, String phone) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.address = address;
+        this.phone = phone;
+        this.verificationToken = generateRandomString(20);
+    }
+
     public String generateRandomString(int length) {
         // SecureRandom 사용하여 예측 불가능한 랜덤 값 생성
         SecureRandom random = new SecureRandom();
