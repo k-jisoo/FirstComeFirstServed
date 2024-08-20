@@ -7,6 +7,7 @@ import com.sparta.firstcomefirstserved.user.repository.UserRepository;
 import com.sparta.firstcomefirstserved.wishList.dto.WishListResponseDto;
 import com.sparta.firstcomefirstserved.wishList.entity.WishList;
 import com.sparta.firstcomefirstserved.wishList.repository.WishListRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,8 @@ public class WishListService {
     public ResponseEntity<String> register(Long userId, Long productId) {
         User regUser = userRepository.findById(userId).orElse(null);
         Product regProduct = productRepository.findById(productId).orElse(null);
+        if(!regProduct.isBIsDisplayed())
+            return new ResponseEntity<>("This product is not displayed", HttpStatus.BAD_REQUEST);
 
         WishList wishList = new WishList(regUser, regProduct);
         wishListRepository.save(wishList);
