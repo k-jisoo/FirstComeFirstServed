@@ -1,5 +1,6 @@
 package com.sparta.firstcomefirstserved.userProduct.controller;
 
+import com.sparta.firstcomefirstserved.product.dto.CancelRequestDto;
 import com.sparta.firstcomefirstserved.userProduct.dto.BuyListResponseDto;
 import com.sparta.firstcomefirstserved.userProduct.dto.WishListResponseDto;
 import com.sparta.firstcomefirstserved.userProduct.service.UserProductService;
@@ -30,5 +31,15 @@ public class UserProductController {
     @GetMapping("/buyLists")
     public List<BuyListResponseDto> getBuyList() {
         return userProductService.getBuyList();
+    }
+
+    @GetMapping("/cancel")
+    public ResponseEntity<String> cancel(CancelRequestDto cancelRequestDto) {
+        return userProductService.cancelBuying(cancelRequestDto);
+    }
+
+    @GetMapping("/refund")
+    public ResponseEntity<String> refund(CancelRequestDto cancelRequestDto) {
+        return userProductService.refund(cancelRequestDto);
     }
 }

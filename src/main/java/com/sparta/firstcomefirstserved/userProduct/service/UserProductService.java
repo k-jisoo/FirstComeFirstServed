@@ -1,6 +1,6 @@
 package com.sparta.firstcomefirstserved.userProduct.service;
 
-import com.sparta.firstcomefirstserved.product.dto.UserProductRequestDto;
+import com.sparta.firstcomefirstserved.product.dto.CancelRequestDto;
 import com.sparta.firstcomefirstserved.product.entity.Product;
 import com.sparta.firstcomefirstserved.product.repository.productRepository;
 import com.sparta.firstcomefirstserved.user.entity.User;
@@ -72,12 +72,12 @@ public class UserProductService {
 
     /**
      * 구매할 productId 리스트를 받아서 productStatus를 WISH->BUY로 변경
-     * @param userProductRequestDtoList userId, productId list
+     * @param cancelRequestDtoList userId, productId list
      * @return ResponseEntity
      */
-    public ResponseEntity<String> buyProduct(UserProductRequestDto userProductRequestDtoList) {
-        User user = findUserById(userProductRequestDtoList.getUserId());
-        List<Product> products = findProductsByIds(userProductRequestDtoList.getProductIds());
+    public ResponseEntity<String> buyProduct(CancelRequestDto cancelRequestDtoList) {
+        User user = findUserById(cancelRequestDtoList.getUserId());
+        List<Product> products = findProductsByIds(cancelRequestDtoList.getProductIds());
 
         if (user == null || products.isEmpty())
             return new ResponseEntity<>("Invalid user or product", HttpStatus.BAD_REQUEST);
@@ -92,12 +92,12 @@ public class UserProductService {
 
     /**
      * 주문 상품에 대한 취소
-     * @param userProductRequestDtoList userId, productId list
+     * @param cancelRequestDto userId, productId list
      * @return ResponseEntity
      */
-    public ResponseEntity<String> cancelBuying(UserProductRequestDto userProductRequestDtoList) {
-        User user = findUserById(userProductRequestDtoList.getUserId());
-        List<Product> products = findProductsByIds(userProductRequestDtoList.getProductIds());
+    public ResponseEntity<String> cancelBuying(CancelRequestDto cancelRequestDto) {
+        User user = findUserById(cancelRequestDto.getUserId());
+        List<Product> products = findProductsByIds(cancelRequestDto.getProductIds());
 
         if (user == null || products.isEmpty())
             return new ResponseEntity<>("Invalid user or product", HttpStatus.BAD_REQUEST);
@@ -112,12 +112,12 @@ public class UserProductService {
 
     /**
      *
-     * @param userProductRequestDtoList
+     * @param cancelRequestDto
      * @return
      */
-    public ResponseEntity<String> refund(UserProductRequestDto userProductRequestDtoList) {
-        User user = findUserById(userProductRequestDtoList.getUserId());
-        List<Product> products = findProductsByIds(userProductRequestDtoList.getProductIds());
+    public ResponseEntity<String> refund(CancelRequestDto cancelRequestDto) {
+        User user = findUserById(cancelRequestDto.getUserId());
+        List<Product> products = findProductsByIds(cancelRequestDto.getProductIds());
 
         if (user == null || products.isEmpty())
             return new ResponseEntity<>("Invalid user or product", HttpStatus.BAD_REQUEST);

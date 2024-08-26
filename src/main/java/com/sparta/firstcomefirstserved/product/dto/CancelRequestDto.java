@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class UserProductRequestDto {
+public class CancelRequestDto {
     private Long userId;
     private List<Long> productIds;
 }
