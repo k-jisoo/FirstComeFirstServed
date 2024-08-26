@@ -33,6 +33,6 @@ public class ProductService {
      * @return bIsDesplayed가 true인 전체 Product list
      */
     public List<ProductInfoResponseDto> getAllProducts() {
-        return productRepository.findAllByBIsDisplayedTrue().stream().map(ProductInfoResponseDto::new).toList();
+        return productRepository.findAllByDisplayedTrue().stream().map(ProductInfoResponseDto::new).toList();
     }
 }

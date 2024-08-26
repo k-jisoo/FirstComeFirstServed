@@ -27,8 +27,8 @@ public class Product {
     @Column(name = "stock", nullable = false)
     private int stock;
 
-    @Column(name = "bIsDisplayed", nullable = false)
-    private boolean bIsDisplayed;
+    @Column(name = "displayed", nullable = false)
+    private boolean displayed;
 
     public Product(String productName, String description, String imageUrl, int price, int stock) {
         this.productName = productName;
@@ -36,6 +36,6 @@ public class Product {
         this.imageUrl = imageUrl;
         this.price = price;
         this.stock = stock;
-        this.bIsDisplayed = true;
+        this.displayed = true;
     }
 }
