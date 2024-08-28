@@ -24,6 +24,9 @@ repositories {
 }
 
 dependencies {
+	//webflux webclient 사용
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
 	//mail
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
