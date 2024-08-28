@@ -2,6 +2,7 @@ package com.sparta.firstcomefirstserved.user.controller;
 
 import com.sparta.firstcomefirstserved.user.dto.LoginRequestDto;
 import com.sparta.firstcomefirstserved.user.dto.SignupRequestDto;
+import com.sparta.firstcomefirstserved.user.dto.UserResponseDto;
 import com.sparta.firstcomefirstserved.user.entity.User;
 import com.sparta.firstcomefirstserved.user.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,11 @@ public class UserController {
     @GetMapping("/verify")
     public ResponseEntity<String> verifyAccount(@RequestParam("token") String token) {
         return userService.verifyUser(token);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponseDto> getUser(@PathVariable("id") Long id) {
+        return userService.getUser(id);
     }
 
 }

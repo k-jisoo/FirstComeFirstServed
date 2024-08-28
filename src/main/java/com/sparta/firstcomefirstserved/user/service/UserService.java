@@ -2,6 +2,7 @@ package com.sparta.firstcomefirstserved.user.service;
 
 import com.sparta.firstcomefirstserved.user.dto.LoginRequestDto;
 import com.sparta.firstcomefirstserved.user.dto.SignupRequestDto;
+import com.sparta.firstcomefirstserved.user.dto.UserResponseDto;
 import com.sparta.firstcomefirstserved.user.entity.User;
 import com.sparta.firstcomefirstserved.user.repository.UserRepository;
 import com.sparta.firstcomefirstserved.utils.AESUtil;
@@ -128,5 +129,17 @@ public class UserService {
         }
 
         return ResponseEntity.ok("Login successful");
+    }
+
+    public ResponseEntity<UserResponseDto> getUser(Long id) {
+        User user = userRepository.findById(id).orElse(null);
+
+        if(user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        UserResponseDto userResponseDto = new UserResponseDto(user);
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(userResponseDto);
     }
 }
