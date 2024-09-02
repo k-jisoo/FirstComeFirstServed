@@ -48,11 +48,11 @@ public class UserProductService {
      * @return HttpStatus.OK, "Registered successful"
      */
     public ResponseEntity<String> register(Long userId, Long productId) {
-        //UserDto regUser = getUserById(userId);
+        UserDto regUser = getUserById(userId);
         ProductDto regProduct = getProductById(productId);
 
-        //if (regUser == null || regProduct == null)
-        //    return new ResponseEntity<>("Invalid user or product", HttpStatus.BAD_REQUEST);
+        if (regUser == null || regProduct == null)
+            return new ResponseEntity<>("Invalid user or product", HttpStatus.BAD_REQUEST);
 
         UserProduct userProduct = new UserProduct(userId, productId);
         userProductRepository.save(userProduct);
@@ -145,7 +145,7 @@ public class UserProductService {
      */
     public UserDto getUserById(Long userId) {
         return this.userClient.get()
-                .uri("/api/user/{userId}", userId)
+                .uri("/api/user/{id}", userId)
                 .retrieve()
                 .bodyToMono(UserDto.class)
                 .block();

@@ -23,7 +23,18 @@ repositories {
 	mavenCentral()
 }
 
+dependencyManagement {
+	imports {
+		// Spring Boot 3.3.2에 맞는 Spring Cloud BOM을 추가합니다.
+		// 이 경우 Spring Cloud 2022.x 버전을 사용하는 것이 일반적입니다.
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:2022.0.4" // 버전은 필요 시 최신으로 변경
+	}
+}
+
 dependencies {
+	//eureka 설정
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
 	//webflux webclient 사용
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
