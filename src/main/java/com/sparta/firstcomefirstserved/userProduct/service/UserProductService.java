@@ -1,32 +1,34 @@
 package com.sparta.firstcomefirstserved.userProduct.service;
 
-import com.sparta.firstcomefirstserved.product.dto.CancelRequestDto;
-import com.sparta.firstcomefirstserved.product.entity.Product;
-import com.sparta.firstcomefirstserved.product.repository.productRepository;
-import com.sparta.firstcomefirstserved.user.entity.User;
-import com.sparta.firstcomefirstserved.user.repository.UserRepository;
+import com.sparta.firstcomefirstserved.product.dto.ProductDto;
+import com.sparta.firstcomefirstserved.user.UserDto;
 import com.sparta.firstcomefirstserved.userProduct.dto.BuyListResponseDto;
+import com.sparta.firstcomefirstserved.userProduct.dto.BuyRequestDto;
+import com.sparta.firstcomefirstserved.userProduct.dto.CancelRequestDto;
 import com.sparta.firstcomefirstserved.userProduct.dto.WishListResponseDto;
 import com.sparta.firstcomefirstserved.userProduct.entity.DeliveryStatus;
 import com.sparta.firstcomefirstserved.userProduct.entity.ProductStatus;
 import com.sparta.firstcomefirstserved.userProduct.entity.UserProduct;
 import com.sparta.firstcomefirstserved.userProduct.repository.UserProductRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class UserProductService {
     private final UserProductRepository userProductRepository;
-    private final UserRepository userRepository;
-    private final com.sparta.firstcomefirstserved.product.repository.productRepository productRepository;
+    private final WebClient userClient;
+    private final WebClient productClient;
 
-    public UserProductService(UserProductRepository userProductRepository, UserRepository userRepository, productRepository productRepository) {
+    public UserProductService(UserProductRepository userProductRepository, WebClient.Builder webClientBuilder) {
         this.userProductRepository = userProductRepository;
-        this.userRepository = userRepository;
-        this.productRepository = productRepository;
+        this.userClient = webClientBuilder.baseUrl("http://localhost:8080").build();
+        this.productClient = webClientBuilder.baseUrl("http://localhost:8081").build();
     }
 
     /**
@@ -46,15 +48,13 @@ public class UserProductService {
      * @return HttpStatus.OK, "Registered successful"
      */
     public ResponseEntity<String> register(Long userId, Long productId) {
-        User regUser = userRepository.findById(userId).orElse(null);
-        Product regProduct = productRepository.findById(productId).orElse(null);
-        if(regUser == null || regProduct == null)
-            return new ResponseEntity<>("Invalid user or product", HttpStatus.BAD_REQUEST);
+        //UserDto regUser = getUserById(userId);
+        ProductDto regProduct = getProductById(productId);
 
-        if (!regProduct.isDisplayed())
-            return new ResponseEntity<>("This product is not displayed", HttpStatus.BAD_REQUEST);
+        //if (regUser == null || regProduct == null)
+        //    return new ResponseEntity<>("Invalid user or product", HttpStatus.BAD_REQUEST);
 
-        UserProduct userProduct = new UserProduct(regUser, regProduct);
+        UserProduct userProduct = new UserProduct(userId, productId);
         userProductRepository.save(userProduct);
 
         return ResponseEntity.ok("Registered successful");
@@ -62,6 +62,7 @@ public class UserProductService {
 
     /**
      * 구매한 물품 리스트 API
+     *
      * @return ProductStatus가 BUY인 product
      */
     public List<BuyListResponseDto> getBuyList() {
@@ -71,82 +72,96 @@ public class UserProductService {
     }
 
     /**
-     * 구매할 productId 리스트를 받아서 productStatus를 WISH->BUY로 변경
-     * @param cancelRequestDtoList userId, productId list
+     * 구매할 productId를 받아서 productStatus를 WISH->BUY로 변경
+     *
+     * @param buyRequestDto userId, productId
      * @return ResponseEntity
      */
-    public ResponseEntity<String> buyProduct(CancelRequestDto cancelRequestDtoList) {
-        User user = findUserById(cancelRequestDtoList.getUserId());
-        List<Product> products = findProductsByIds(cancelRequestDtoList.getProductIds());
+    public ResponseEntity<String> buyProduct(BuyRequestDto buyRequestDto) {
+        UserDto user = getUserById(buyRequestDto.getUserId());
+        ProductDto product = getProductById(buyRequestDto.getProductId());
 
-        if (user == null || products.isEmpty())
+        if (user == null || product == null)
             return new ResponseEntity<>("Invalid user or product", HttpStatus.BAD_REQUEST);
 
-        products.stream()
-                .map(product -> userProductRepository.findByUserIdAndProductId(user.getId(), product.getId()).orElse(null))
-                .filter(userProduct -> userProduct != null && userProduct.getProduct().isDisplayed())
-                .forEach(userProduct -> userProduct.setProductStatus(ProductStatus.BUY));
+        UserProduct userProduct = userProductRepository.findByUserIdAndProductId(buyRequestDto.getUserId(), buyRequestDto.getProductId()).orElse(null);
+        if (userProduct != null) {
+            userProduct.setProductStatus(ProductStatus.BUY);
+            return new ResponseEntity<>("BuyRequestDto is not exists in wishlist", HttpStatus.BAD_REQUEST);
+        }
 
         return ResponseEntity.ok("Buy successful");
     }
 
     /**
      * 주문 상품에 대한 취소
-     * @param cancelRequestDto userId, productId list
+     *
+     * @param cancelRequestDto userId, productId
      * @return ResponseEntity
      */
     public ResponseEntity<String> cancelBuying(CancelRequestDto cancelRequestDto) {
-        User user = findUserById(cancelRequestDto.getUserId());
-        List<Product> products = findProductsByIds(cancelRequestDto.getProductIds());
+        UserDto user = getUserById(cancelRequestDto.getUserId());
+        ProductDto product = getProductById(cancelRequestDto.getProductId());
 
-        if (user == null || products.isEmpty())
+        if (user == null || product == null)
             return new ResponseEntity<>("Invalid user or product", HttpStatus.BAD_REQUEST);
 
-        products.stream()
-                .map(product -> userProductRepository.findByUserIdAndProductId(user.getId(), product.getId()).orElse(null))
-                .filter(userProduct -> userProduct.getDeliveryStatus() == DeliveryStatus.PREPARING)
-                .forEach(userProduct -> userProduct.setProductStatus(ProductStatus.WISH));
+        userProductRepository.findByUserIdAndProductId(cancelRequestDto.getUserId(), cancelRequestDto.getProductId()).ifPresent(userProduct -> {
+            if(userProduct.getDeliveryStatus() == DeliveryStatus.PREPARING) {
+                userProduct.setProductStatus(ProductStatus.WISH);
+            }
+        });
 
-        return ResponseEntity.ok("CancelBuying successful");
+        return ResponseEntity.ok("Cancel buying successful");
     }
 
     /**
+     * 배송된 상품에 대한 환불 요청
      *
-     * @param cancelRequestDto
-     * @return
+     * @param cancelRequestDto userId, productId
+     * @return ResponseEntity
      */
     public ResponseEntity<String> refund(CancelRequestDto cancelRequestDto) {
-        User user = findUserById(cancelRequestDto.getUserId());
-        List<Product> products = findProductsByIds(cancelRequestDto.getProductIds());
+        UserDto user = getUserById(cancelRequestDto.getUserId());
+        ProductDto product = getProductById(cancelRequestDto.getProductId());
 
-        if (user == null || products.isEmpty())
+        if (user == null || product == null)
             return new ResponseEntity<>("Invalid user or product", HttpStatus.BAD_REQUEST);
 
-        products.stream()
-                .map(product -> userProductRepository.findByUserIdAndProductId(user.getId(), product.getId()).orElse(null))
-                .filter(userProduct -> userProduct.getDeliveryStatus() == DeliveryStatus.DONE && userProduct.isCanRefund())
-                .forEach(userProduct -> userProduct.setProductStatus(ProductStatus.REFUND));
+        userProductRepository.findByUserIdAndProductId(cancelRequestDto.getUserId(), cancelRequestDto.getProductId()).ifPresent(userProduct -> {
+            if(userProduct.getDeliveryStatus() == DeliveryStatus.DONE && userProduct.isCanRefund()) {
+                userProduct.setProductStatus(ProductStatus.REFUND);
+            }
+        });
 
         return ResponseEntity.ok("Refund successful");
     }
 
     /**
-     * Helper
+     * UserService 서버에 접속해 User 정보 return
+     *
      * @param userId
-     * @return
+     * @return UserDto
      */
-    private User findUserById(Long userId) {
-        return userRepository.findById(userId).orElse(null);
+    public UserDto getUserById(Long userId) {
+        return this.userClient.get()
+                .uri("/api/user/{userId}", userId)
+                .retrieve()
+                .bodyToMono(UserDto.class)
+                .block();
     }
 
     /**
-     * Helper
-     * @param productIds
-     * @return
+     * ProductService 서버에 접속해 Product 정보 return
+     *
+     * @param productId
+     * @return ProductDto
      */
-    private List<Product> findProductsByIds(List<Long> productIds) {
-        return productIds.stream()
-                .map(productId -> productRepository.findById(productId).orElse(null))
-                .toList();
+    public ProductDto getProductById(Long productId) {
+        return this.productClient.get()
+                .uri("/api/product/{productId}", productId)
+                .retrieve()
+                .bodyToMono(ProductDto.class)
+                .block();
     }
 }

@@ -13,7 +13,7 @@ public class WishListResponseDto {
 
     public WishListResponseDto(UserProduct userProduct) {
         this.id = userProduct.getId();
-        this.userId = userProduct.getUser().getId();
-        this.productId = userProduct.getProduct().getId();
+        this.userId = userProduct.getUserId();
+        this.productId = userProduct.getProductId();;
     }
 }

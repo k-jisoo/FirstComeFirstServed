@@ -1,6 +1,6 @@
 package com.sparta.firstcomefirstserved.userProduct.controller;
 
-import com.sparta.firstcomefirstserved.product.dto.CancelRequestDto;
+import com.sparta.firstcomefirstserved.userProduct.dto.CancelRequestDto;
 import com.sparta.firstcomefirstserved.userProduct.dto.BuyListResponseDto;
 import com.sparta.firstcomefirstserved.userProduct.dto.WishListResponseDto;
 import com.sparta.firstcomefirstserved.userProduct.service.UserProductService;

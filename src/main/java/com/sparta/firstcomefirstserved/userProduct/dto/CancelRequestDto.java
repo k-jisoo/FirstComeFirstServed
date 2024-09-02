@@ -1,4 +1,4 @@
-package com.sparta.firstcomefirstserved.product.dto;
+package com.sparta.firstcomefirstserved.userProduct.dto;
 
 import lombok.Getter;
 
@@ -7,5 +7,5 @@ import java.util.List;
 @Getter
 public class CancelRequestDto {
     private Long userId;
-    private List<Long> productIds;
+    private Long productId;
 }

@@ -1,7 +1,5 @@
 package com.sparta.firstcomefirstserved.userProduct.dto;
 
-import com.sparta.firstcomefirstserved.product.entity.Product;
-import com.sparta.firstcomefirstserved.user.entity.User;
 import com.sparta.firstcomefirstserved.userProduct.entity.DeliveryStatus;
 import com.sparta.firstcomefirstserved.userProduct.entity.ProductStatus;
 import com.sparta.firstcomefirstserved.userProduct.entity.UserProduct;
@@ -12,8 +10,8 @@ import java.time.LocalDateTime;
 @Getter
 public class BuyListResponseDto {
     private Long id;
-    private User user;
-    private Product product;
+    private Long userId;
+    private Long productId;
     private ProductStatus productStatus;
     private LocalDateTime purchaseDate;
     private DeliveryStatus deliveryStatus;
@@ -23,8 +21,8 @@ public class BuyListResponseDto {
 
     public BuyListResponseDto(UserProduct userProduct) {
         this.id = userProduct.getId();
-        this.user = userProduct.getUser();
-        this.product = userProduct.getProduct();
+        this.userId = userProduct.getUserId();
+        this.productId = userProduct.getProductId();
         this.productStatus = userProduct.getProductStatus();
         this.purchaseDate = userProduct.getPurchaseDate();
         this.deliveryStatus = userProduct.getDeliveryStatus();

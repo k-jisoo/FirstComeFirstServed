@@ -1,7 +1,5 @@
 package com.sparta.firstcomefirstserved.userProduct.entity;
 
-import com.sparta.firstcomefirstserved.product.entity.Product;
-import com.sparta.firstcomefirstserved.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,13 +15,11 @@ public class UserProduct {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
-    private User user;
+    @Column(name = "userId", nullable = false)
+    private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "productId", nullable = false)
-    private Product product;
+    @Column(name = "productId", nullable = false)
+    private Long productId;
 
     @Column(name = "productStatus", nullable = false)
     private ProductStatus productStatus;
@@ -38,9 +34,9 @@ public class UserProduct {
     private LocalDateTime deliveredDate;
 
 
-    public UserProduct(User user, Product product) {
-        this.user = user;
-        this.product = product;
+    public UserProduct(Long userId, Long productId) {
+        this.userId = userId;
+        this.productId = productId;
         this.productStatus = ProductStatus.WISH;
         this.deliveryStatus = DeliveryStatus.NONE;
     }
