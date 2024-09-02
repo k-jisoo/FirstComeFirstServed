@@ -24,6 +24,9 @@ repositories {
 }
 
 dependencies {
+	//eureka 사용
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
 	//webflux webclient 사용
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
