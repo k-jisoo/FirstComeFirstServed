@@ -3,10 +3,12 @@ package com.sparta.firstcomefirstserved.product.service;
 import com.sparta.firstcomefirstserved.product.dto.ProductInfoResponseDto;
 import com.sparta.firstcomefirstserved.product.entity.Product;
 import com.sparta.firstcomefirstserved.product.repository.productRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class ProductService {
     private final com.sparta.firstcomefirstserved.product.repository.productRepository productRepository;
@@ -22,8 +24,12 @@ public class ProductService {
      */
     public ProductInfoResponseDto getProduct(Long id) {
         Product product = productRepository.findById(id).orElse(null);
-        if (product == null)
+        if (product == null) {
+            log.error("Product not found");
             return null;
+        }
+
+        log.error("Product found");
 
         return new ProductInfoResponseDto(product);
     }
