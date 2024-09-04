@@ -22,13 +22,11 @@ import java.util.List;
 @Service
 public class UserProductService {
     private final UserProductRepository userProductRepository;
-    private final WebClient userClient;
-    private final WebClient productClient;
+    private final WebClient webClient;
 
     public UserProductService(UserProductRepository userProductRepository, WebClient.Builder webClientBuilder) {
         this.userProductRepository = userProductRepository;
-        this.userClient = webClientBuilder.baseUrl("http://localhost:8080").build();
-        this.productClient = webClientBuilder.baseUrl("http://localhost:8081").build();
+        this.webClient = webClientBuilder.baseUrl("http://firstcomefirstserved").build();
     }
 
     /**
@@ -144,7 +142,7 @@ public class UserProductService {
      * @return UserDto
      */
     public UserDto getUserById(Long userId) {
-        return this.userClient.get()
+        return this.webClient.get()
                 .uri("/api/user/{id}", userId)
                 .retrieve()
                 .bodyToMono(UserDto.class)
@@ -158,7 +156,7 @@ public class UserProductService {
      * @return ProductDto
      */
     public ProductDto getProductById(Long productId) {
-        return this.productClient.get()
+        return this.webClient.get()
                 .uri("/api/product/{productId}", productId)
                 .retrieve()
                 .bodyToMono(ProductDto.class)
