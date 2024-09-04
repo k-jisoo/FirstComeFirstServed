@@ -140,6 +140,6 @@ public class UserService {
 
         UserResponseDto userResponseDto = new UserResponseDto(user);
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(userResponseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
     }
 }
